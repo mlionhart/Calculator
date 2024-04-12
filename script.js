@@ -6,10 +6,79 @@ let operationClicked = false;
 let enterBtn = false;
 
 // operations as simple functions
-const add = (num1, num2) => num1 + num2;
-const subtract = (num1, num2) => num1 - num2;
-const multiply = (num1, num2) => num1 * num2;
-const divide = (num1, num2) => num1 / num2;
+const add = (num1, num2) => {
+  let result = num1 + num2;
+  let resultStr = result.toString();
+
+  if (resultStr.includes(".")) {
+    // If the result is a floating point number, limit the total number of digits (including the decimal point)
+    if (resultStr.length > 9) {
+      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
+    }
+  } else {
+    // If the result is an integer, limit it to 8 digits
+    if (resultStr.length > 8) {
+      result = parseInt(resultStr.substring(0, 8));
+    }
+  }
+
+  return result;
+};
+
+const subtract = (num1, num2) => {
+  let result = num1 - num2;
+  let resultStr = result.toString();
+
+  if (resultStr.includes(".")) {
+    if (resultStr.length > 9) {
+      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
+    }
+  } else {
+    if (resultStr.length > 8) {
+      result = parseInt(resultStr.substring(0, 8));
+    }
+  }
+
+  return result;
+};
+
+const multiply = (num1, num2) => {
+  let result = num1 * num2;
+  let resultStr = result.toString();
+
+  if (resultStr.includes(".")) {
+    if (resultStr.length > 9) {
+      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
+    }
+  } else {
+    if (resultStr.length > 8) {
+      result = parseInt(resultStr.substring(0, 8));
+    }
+  }
+
+  return result;
+};
+
+const divide = (num1, num2) => {
+  if (num2 === 0) {
+    return "Error"; // Prevent division by zero
+  }
+
+  let result = num1 / num2;
+  let resultStr = result.toString();
+
+  if (resultStr.includes(".")) {
+    if (resultStr.length > 9) {
+      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
+    }
+  } else {
+    if (resultStr.length > 8) {
+      result = parseInt(resultStr.substring(0, 8));
+    }
+  }
+
+  return result;
+};
 
 let operation = null;
 let firstNum = 0;
