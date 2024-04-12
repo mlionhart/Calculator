@@ -4,7 +4,6 @@ const inputArray = [];
 const buttons = Array.from(document.querySelectorAll("button"));
 let operationClicked = false;
 let enterBtn = false;
-let decimals = false;
 let afterDecimal = '';
 let operation = null;
 let firstNum = 0;
@@ -12,20 +11,18 @@ let secondNum = 0;
 
 const addCommas = (numStr) => {
   if (numStr.includes('.')) {
-    decimals = true;
-  }
-  
-  if (decimals) {
-    numStr = numStr.slice(0, numStr.indexOf('.'));
-    console.log("before: " + numStr);
-    afterDecimal = numStr.slice(numStr.indexOf('.') + 1, numStr.length-1);
-    console.log('afterDecimal: ' + afterDecimal);
+    let parts = numStr.toString().split(".");
+    let integerPart = parts[0];
+    let decimalPart = parts.length > 1 ? "." + parts[1] : "";
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    console.log(numStr);
+    return integerPart + decimalPart;
   }
 
   if (numStr.includes(',')) {
     numStr = numStr.replace(/,/g, "");
   }
-  // numStr = numStr.toString();
+
   if (numStr.length > 3 && numStr.length <= 6) {
     numStr =
       numStr.slice(0, numStr.length - 3) +
@@ -33,85 +30,45 @@ const addCommas = (numStr) => {
       numStr.slice(numStr.length - 3);
   } else if (numStr.length > 6) {
     numStr =
-      numStr.slice(0, numStr.length - (numStr.length - 1)) +
+      numStr.slice(0, numStr.length - 6) +
       "," +
       numStr.slice(numStr.length - 6, numStr.length - 3) +
       "," +
       numStr.slice(numStr.length - 3);
-  } else {
-    if (decimals) {
-      decimals = false;
-      return numStr + '.' + afterDecimal;
-    }
-  }
-
-  if (decimals) {
-    numStr = numStr + '.' + afterDecimal;
-    decimals = false;
-    console.log("1: " + numStr);
-    // decimals = false;
-  }
+  } 
 
   return numStr;
 };
 
 // operations functions
 const add = (num1, num2) => {
+  // Directly calculate the result of the addition
   let result = num1 + num2;
-  let resultStr = result.toString();
 
-  if (resultStr.includes(".")) {
-    // If the result is a floating point number, limit the total number of digits (including the decimal point)
-    if (resultStr.length > 9) {
-      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
-    }
-  } else {
-    // If the result is an integer, limit it to 8 digits
-    if (resultStr.length > 8) {
-      result = resultStr.substring(0, 8);
-    }
-  }
-
-  // return with commas added
-  return addCommas(result.toString());
+  // Pass the numerical result directly to the formatting function
+  return formatNumber(result);
 };
 
 const subtract = (num1, num2) => {
+  // Calculate the subtraction result directly
   let result = num1 - num2;
-  let resultStr = result.toString();
 
-  if (resultStr.includes(".")) {
-    if (resultStr.length > 9) {
-      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
-    }
-  } else {
-    if (resultStr.length > 8) {
-      result = parseInt(resultStr.substring(0, 8));
-    }
-  }
-
-  // return with commas added 
-  return addCommas(result.toString());
+  // Use the formatNumber function to handle all formatting
+  return formatNumber(result);
 };
 
 const multiply = (num1, num2) => {
   let result = num1 * num2;
   let resultStr = result.toString();
 
+  // Normalize floating point precision to a maximum of 2 decimal places
   if (resultStr.includes(".")) {
-    if (resultStr.length > 9) {
-      result = parseFloat(result.toFixed(8 - (resultStr.indexOf(".") + 1)));
-    } 
-  } else {
-    if (resultStr.length > 8) {
-      result = resultStr.substring(0, 9);
-      result = addCommas(result);
-    } else {
-      result = addCommas(resultStr);
-    }
+    result = parseFloat(result.toFixed(2)); // round to two decimal places
+    resultStr = result.toString().replace(/\.?0+$/, ""); // clean up trailing zeros
   }
 
-  return result;
+  // Format the number with commas for readability
+  return formatNumber(resultStr);
 };
 
 const divide = (num1, num2) => {
@@ -122,20 +79,31 @@ const divide = (num1, num2) => {
   let result = num1 / num2;
   let resultStr = result.toString();
 
+  // Normalize floating point precision to a maximum of 2 decimal places
   if (resultStr.includes(".")) {
-    if (resultStr.length > 9) {
-      result = parseFloat(result.toFixed(8 - (resultStr.indexOf(".") + 1)));
-    }
-  } else {
-    if (resultStr.length > 8) {
-      result = parseInt(resultStr.substring(0, 8));
-    } else {
-      return addCommas(result.toString());
-    }
+    result = parseFloat(result.toFixed(2)); // round to two decimal places
+    resultStr = result.toString().replace(/\.?0+$/, ""); // clean up trailing zeros
   }
 
-  return result;
+  // Format the number with commas for readability
+  return formatNumber(resultStr);
 };
+
+function formatNumber(num) {
+  // Ensure the input is treated as a number to handle formatting properly.
+  let number = Number(num); // Convert the input to a number if it isn't already.
+
+  // Check if the number is too large for standard display (you may adjust the length threshold).
+  if (number.toString().length > 8 || Math.abs(number) >= 1e8) {
+    // Use scientific notation for very large or small numbers.
+    return number.toExponential(2);
+  } else {
+    // Convert the number to a string and format it with commas.
+    let formattedNumber = number.toFixed(2).replace(/\.?0+$/, "");
+    return addCommas(formattedNumber);
+  }
+}
+
 
 input.focus();
 
@@ -204,6 +172,10 @@ input.addEventListener("keydown", (event) => {
     secondNum = 0;
   }
 
+  if (event.key === "Backspace") {
+    input.value = addCommas(input.value.slice(0, -1));
+  }
+
   // since Enter key will only be pressed once user is ready, we can just store the secondNum now
   if (event.key == "Enter") {
     secondNum = parseFloat(input.value.replace(/,/g, ""));
@@ -222,13 +194,13 @@ input.addEventListener("keydown", (event) => {
         break;
       case "add":
         if (enterBtn === true) {
-          input.value = input.value + secondNum;
+          input.value = parseFloat(input.value) + secondNum;
         }
         input.value = add(firstNum, secondNum);
         break;
       case "subtract":
         if (enterBtn === true) {
-          input.value = input.value - secondNum;
+          input.value = parseFloat(input.value) - secondNum;
         }
         input.value = subtract(firstNum, secondNum);
         break;
@@ -336,7 +308,7 @@ buttons.forEach((i) => {
           secondNum = 0;
           break;
         case "":
-          input.value = input.value.slice(0, -1);
+          input.value = addCommas(input.value.slice(0, -1));
           // input.value = 0;
           // operation = null;
           // firstNum = 0;
@@ -372,14 +344,14 @@ buttons.forEach((i) => {
               break;
             case "add":
               if (enterBtn === true) {
-                input.value = input.value + secondNum;
+                input.value = parseFloat(input.value) + secondNum;
                 enterBtn = false;
               }
               input.value = add(firstNum, secondNum);
               break;
             case "subtract":
               if (enterBtn === true) {
-                input.value = input.value - secondNum;
+                input.value = parseFloat(input.value) - secondNum;
                 enterBtn = false;
               }
               input.value = subtract(firstNum, secondNum);
@@ -396,242 +368,3 @@ buttons.forEach((i) => {
     input.focus();
   });
 });
-
-/* --------------- First Try - Messy and Crappy (I'm rusty) --------------- */
-
-// input.addEventListener("keydown", (event) => {
-//   // checking if number, and if not preventing display of input
-//   if (!isNaN(event.key) || event.key === '.') {
-//     let num = event.key;
-//     inputArray.push(num);
-//   } else {
-//     event.preventDefault();
-//   }
-
-//   // clear on escape key
-//   if (event.key === 'Escape') {
-//     input.value = 0;
-//   }
-
-//   let num = event.key;
-
-//   // get current full value
-//   let inputNum = parseFloat(input.value);
-
-//   // multiplication key
-//   if (num == '*') multiply(inputNum);
-
-//   // division key 
-//   if (num == '/') divide(inputNum);
-
-//   // Addition key(s)
-//   if (num == '+') add(inputNum);
-
-//   // subtraction key(s)
-//   if (num == '-') subtract(inputNum);
-// });
-
-// const multiply = (num) => {
-//   const firstNum = num;
-//   let secondNum = 0;
-//   const multiplyArray = [];
-
-  
-//   input.addEventListener("keydown", (event) => {
-//     if (input.value === "0") input.value = "";
-//     if (!isNaN(event.key)) {
-//       let num = event.key;
-//       if (multiplyArray.length < 1) input.value = "";
-//       // if not zero (to overwrite zero)
-//       if (input.value !== "0") {
-//         input.value += num;
-//       } else {
-//         input.value = num;
-//       }
-//       multiplyArray.push(num);
-//     }
-
-//     if (event.key == "Enter") {
-//       secondNum = parseFloat(multiplyArray.join(""));
-//       input.value = firstNum * secondNum;
-//     }
-//   });
-
-//   keypad.addEventListener('click', (event) => {
-//     let num = event.target.innerText;
-
-//     if (!isNaN(parseFloat(num))) {
-//       if (multiplyArray.length < 1) input.value = 0;
-//       input.value = num;
-//       multiplyArray.push(num);
-//     }
-
-//     if (num === '=') {
-//       secondNum = parseFloat(multiplyArray.join(""));
-//       input.value = firstNum * secondNum;
-//     }
-//   })
-  
-// }
-
-// const divide = (num) => {
-//   const firstNum = num;
-//   let secondNum = 0;
-//   const divideArray = [];
-
-
-//   input.addEventListener("keydown", (event) => {
-//     if (input.value === "0") input.value = "";
-//     if (!isNaN(event.key)) {
-//       let num = event.key;
-//       if (divideArray.length < 1) input.value = "";
-//       if (input.value !== "0") {
-//         input.value += num;
-//       } else {
-//         input.value = num;
-//       }
-//       divideArray.push(num);
-//     }
-
-//     if (event.key == "Enter") {
-//       secondNum = parseFloat(divideArray.join(""));
-//       input.value = firstNum * secondNum;
-//     }
-//   });
-
-//   keypad.addEventListener("click", (event) => {
-//     let num = event.target.innerText;
-
-//     if (!isNaN(parseFloat(num))) {
-//       if (divideArray.length < 1) input.value = "";
-//       input.value = num;
-//       divideArray.push(num);
-//     }
-
-//     if (num === "=") {
-//       secondNum = parseFloat(divideArray.join(""));
-//       input.value = firstNum / secondNum;
-//     }
-//   });
-// };
-
-// const add = (num) => {
-//   const firstNum = num;
-//   let secondNum = 0;
-//   const addArray = [];
-
-
-//   input.addEventListener("keydown", (event) => {
-//     if (input.value === "0") input.value = "";
-//     if (!isNaN(event.key)) {
-//       let num = event.key;
-//       if (addArray.length < 1) input.value = "";
-//       if (input.value !== "0") {
-//         input.value += num;
-//       } else {
-//         input.value = num;
-//       }
-//       addArray.push(num);
-//     }
-
-//     if (event.key == "Enter") {
-//       secondNum = parseFloat(addArray.join(""));
-//       input.value = firstNum * secondNum;
-//     }
-//   });
-
-//   keypad.addEventListener("click", (event) => {
-//     let num = event.target.innerText;
-
-//     if (!isNaN(parseFloat(num))) {
-//       if (addArray.length < 1) input.value = "";
-//       input.value = num;
-//       addArray.push(num);
-//     }
-
-//     if (num === "=") {
-//       secondNum = parseFloat(addArray.join(""));
-//       input.value = firstNum + secondNum;
-//     }
-//   });
-// };
-
-// const subtract = (num) => {
-//   const firstNum = num;
-//   let secondNum = 0;
-//   const subtractionArray = [];
-
-
-//   input.addEventListener("keydown", (event) => {
-//     if (input.value === "0") input.value = "";
-//     if (!isNaN(event.key)) {
-//       let num = event.key;
-//       if (subtractionArray.length < 1) input.value = "";
-//       if (input.value !== "0") {
-//         input.value += num;
-//       } else {
-//         input.value = num;
-//       }
-//       subtractionArray.push(num);
-//     }
-
-//     if (event.key == "Enter") {
-//       secondNum = parseFloat(subtractionArray.join(""));
-//       input.value = firstNum * secondNum;
-//     }
-//   });
-
-//   keypad.addEventListener("click", (event) => {
-//     let num = event.target.innerText;
-
-//     if (!isNaN(parseFloat(num))) {
-//       if (subtractionArray.length < 1) input.value = "";
-//       input.value = num;
-//       subtractionArray.push(num);
-//     }
-
-//     if (num === "=") {
-//       secondNum = parseFloat(subtractionArray.join(""));
-//       input.value = firstNum - secondNum;
-//     }
-//   });
-// };
-
-
-// buttons.forEach(i => {
-//   i.addEventListener('click', () => {
-//     let val = parseFloat(i.innerText);
-//     if (!isNaN(val)) {
-//       if (input.value === "0") input.value = "";
-//       input.value += val;
-//     } else {
-//       val = i.innerText;
-//       switch (val) {
-//         case '+':
-//           add(input.value);
-//           break;
-//         case '-':
-//           subtract(input.value);
-//           break;
-//         case '/':
-//           divide(input.value);
-//           break;
-//         case '*':
-//           multiply(input.value);
-//           break;
-//         case 'C':
-//           input.value = 0;
-//           break;
-//         case 'AC':
-//           input.value = 0;
-//           break;
-//         case '.':
-//           input.value += val;
-//           break;
-//         default:
-//           break;
-//       }
-//     }
-//     input.focus();
-//   })
-// })
