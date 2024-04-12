@@ -6,6 +6,9 @@ let operationClicked = false;
 let enterBtn = false;
 let decimals = false;
 let afterDecimal = '';
+let operation = null;
+let firstNum = 0;
+let secondNum = 0;
 
 const addCommas = (numStr) => {
   if (numStr.includes('.')) {
@@ -52,7 +55,7 @@ const addCommas = (numStr) => {
   return numStr;
 };
 
-// operations as simple functions
+// operations functions
 const add = (num1, num2) => {
   let result = num1 + num2;
   let resultStr = result.toString();
@@ -69,6 +72,7 @@ const add = (num1, num2) => {
     }
   }
 
+  // return with commas added
   return addCommas(result.toString());
 };
 
@@ -86,6 +90,7 @@ const subtract = (num1, num2) => {
     }
   }
 
+  // return with commas added 
   return addCommas(result.toString());
 };
 
@@ -131,10 +136,6 @@ const divide = (num1, num2) => {
 
   return result;
 };
-
-let operation = null;
-let firstNum = 0;
-let secondNum = 0;
 
 input.focus();
 
@@ -194,7 +195,7 @@ input.addEventListener("keydown", (event) => {
     }
   }
 
-  if (event.key === 'Escape' || event.key === "Backspace") {
+  if (event.key === 'Escape') {
     input.value = 0;
     operation = null;
     operationClicked = false;
@@ -334,11 +335,12 @@ buttons.forEach((i) => {
           firstNum = 0;
           secondNum = 0;
           break;
-        case "AC":
-          input.value = 0;
-          operation = null;
-          firstNum = 0;
-          secondNum = 0;
+        case "":
+          input.value = input.value.slice(0, -1);
+          // input.value = 0;
+          // operation = null;
+          // firstNum = 0;
+          // secondNum = 0;
           break;
         case ".":
           if (operationClicked) {
