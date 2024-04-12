@@ -23,9 +23,36 @@ const addCommas = (numStr) => {
     numStr = numStr.replace(/,/g, "");
   }
 
-  if (numStr.length > 3 && numStr.length <= 6) {
+  // if (numStr.length > 3 && numStr.length <= 6) {
+  //   numStr =
+  //     numStr.slice(0, numStr.length - 3) +
+  //     "," +
+  //     numStr.slice(numStr.length - 3);
+  // } else if (numStr.length > 6) {
+  //   numStr =
+  //     numStr.slice(0, numStr.length - 6) +
+  //     "," +
+  //     numStr.slice(numStr.length - 6, numStr.length - 3) +
+  //     "," +
+  //     numStr.slice(numStr.length - 3);
+  // } else if (numStr.length > 9) {
+  //   numStr =
+  //     numStr.slice(0, numStr.length - 9) +
+  //     "," +
+  //     numStr.slice(numStr.length - 9, numStr.length - 6) +
+  //     "," +
+  //     numStr.slice(numStr.length - 6, numStr.length - 3) +
+  //     "," + 
+  //     numStr.slice(numStr.length - 3);
+  // }
+
+  if (numStr.length > 9) {
     numStr =
-      numStr.slice(0, numStr.length - 3) +
+      numStr.slice(0, numStr.length - 9) +
+      "," +
+      numStr.slice(numStr.length - 9, numStr.length - 6) +
+      "," +
+      numStr.slice(numStr.length - 6, numStr.length - 3) +
       "," +
       numStr.slice(numStr.length - 3);
   } else if (numStr.length > 6) {
@@ -35,7 +62,12 @@ const addCommas = (numStr) => {
       numStr.slice(numStr.length - 6, numStr.length - 3) +
       "," +
       numStr.slice(numStr.length - 3);
-  } 
+  } else if (numStr.length > 3) {
+    numStr =
+      numStr.slice(0, numStr.length - 3) +
+      "," +
+      numStr.slice(numStr.length - 3);
+  }
 
   return numStr;
 };
