@@ -4,6 +4,53 @@ const inputArray = [];
 const buttons = Array.from(document.querySelectorAll("button"));
 let operationClicked = false;
 let enterBtn = false;
+let decimals = false;
+let afterDecimal = '';
+
+const addCommas = (numStr) => {
+  if (numStr.includes('.')) {
+    decimals = true;
+  }
+  
+  if (decimals) {
+    numStr = numStr.slice(0, numStr.indexOf('.'));
+    console.log("before: " + numStr);
+    afterDecimal = numStr.slice(numStr.indexOf('.') + 1, numStr.length-1);
+    console.log('afterDecimal: ' + afterDecimal);
+  }
+
+  if (numStr.includes(',')) {
+    numStr = numStr.replace(/,/g, "");
+  }
+  // numStr = numStr.toString();
+  if (numStr.length > 3 && numStr.length <= 6) {
+    numStr =
+      numStr.slice(0, numStr.length - 3) +
+      "," +
+      numStr.slice(numStr.length - 3);
+  } else if (numStr.length > 6) {
+    numStr =
+      numStr.slice(0, numStr.length - (numStr.length - 1)) +
+      "," +
+      numStr.slice(numStr.length - 6, numStr.length - 3) +
+      "," +
+      numStr.slice(numStr.length - 3);
+  } else {
+    if (decimals) {
+      decimals = false;
+      return numStr + '.' + afterDecimal;
+    }
+  }
+
+  if (decimals) {
+    numStr = numStr + '.' + afterDecimal;
+    decimals = false;
+    console.log("1: " + numStr);
+    // decimals = false;
+  }
+
+  return numStr;
+};
 
 // operations as simple functions
 const add = (num1, num2) => {
@@ -18,11 +65,11 @@ const add = (num1, num2) => {
   } else {
     // If the result is an integer, limit it to 8 digits
     if (resultStr.length > 8) {
-      result = parseInt(resultStr.substring(0, 8));
+      result = resultStr.substring(0, 8);
     }
   }
 
-  return result;
+  return addCommas(result.toString());
 };
 
 const subtract = (num1, num2) => {
@@ -39,7 +86,7 @@ const subtract = (num1, num2) => {
     }
   }
 
-  return result;
+  return addCommas(result.toString());
 };
 
 const multiply = (num1, num2) => {
@@ -49,10 +96,13 @@ const multiply = (num1, num2) => {
   if (resultStr.includes(".")) {
     if (resultStr.length > 9) {
       result = parseFloat(result.toFixed(8 - (resultStr.indexOf(".") + 1)));
-    }
+    } 
   } else {
     if (resultStr.length > 8) {
-      result = parseInt(resultStr.substring(0, 8));
+      result = resultStr.substring(0, 9);
+      result = addCommas(result);
+    } else {
+      result = addCommas(resultStr);
     }
   }
 
@@ -74,6 +124,8 @@ const divide = (num1, num2) => {
   } else {
     if (resultStr.length > 8) {
       result = parseInt(resultStr.substring(0, 8));
+    } else {
+      return addCommas(result.toString());
     }
   }
 
@@ -95,6 +147,7 @@ window.onload = () => {
 input.addEventListener("keydown", (event) => {
   // Prevent the default input behavior (prevent double input from being and input field)
   event.preventDefault();
+  console.log(event.key);
 
   // Ensures zero is overwritten on input
   if (input.value === "0") input.value = "";
@@ -115,12 +168,25 @@ input.addEventListener("keydown", (event) => {
       }
     }
 
-    // if operation has already been selected, replace value, rather than concatenate
+    // if operation has already been selected, replace value, rather than concatenate, then set operationClicked back to false
     if (operationClicked) {
       input.value = num;
       operationClicked = false;
-    } else if (input.value !== "0" && num !== '.') {
+      // if no operation clicked, and full input value isn't single dot or zero, concatenate value
+    } else if (input.value !== "0" && num !== '.') { 
       input.value += num;
+      // if decimal is present in the input field, and no more than 3 digits exist to the LEFT of the decimal, add commas to the input value
+      if (input.value.includes('.')) {
+        if (input.value.split(0, input.value.indexOf('.')).length > 3) {
+          input.value = addCommas(input.value);
+        }
+        // if no decimal is present in the input field, and no more than 3 digits, add commas
+      } else {
+        if (input.value.length > 3) {
+          input.value = addCommas(input.value);
+        }
+      }
+      // if no operation, and current num isn't a period, replace input value with current num
     } else {
       if (num !== '.') {
         input.value = num;
@@ -128,7 +194,7 @@ input.addEventListener("keydown", (event) => {
     }
   }
 
-  if (event.key === 'Escape') {
+  if (event.key === 'Escape' || event.key === "Backspace") {
     input.value = 0;
     operation = null;
     operationClicked = false;
@@ -139,7 +205,7 @@ input.addEventListener("keydown", (event) => {
 
   // since Enter key will only be pressed once user is ready, we can just store the secondNum now
   if (event.key == "Enter") {
-    secondNum = parseFloat(input.value);
+    secondNum = parseFloat(input.value.replace(/,/g, ""));
     switch (operation) {
       case "multiply":
         if (enterBtn === true) {
@@ -173,7 +239,7 @@ input.addEventListener("keydown", (event) => {
   let num = event.key;
 
   // get current full value
-  let inputNum = parseFloat(input.value);
+  let inputNum = parseFloat(input.value.replace(/,/g, ""));
 
   // multiplication key
   if (num == "*") {
@@ -209,8 +275,6 @@ buttons.forEach((i) => {
       // if value already in the input is zero, set input to val. If not, concatenate key onto input
       let val = i.innerText;
 
-      let lastNum;
-
       if (!isNaN(parseFloat(val))) {
         enterBtn = false;
         val = parseFloat(val);
@@ -221,6 +285,16 @@ buttons.forEach((i) => {
           operationClicked = false;
         } else if (input.value !== "0") {
           input.value += val;
+          if (input.value.includes(".")) {
+            if (input.value.split(0, input.value.indexOf(".")).length > 3) {
+              input.value = addCommas(input.value);
+            }
+            // if no decimal is present in the input field, and no more than 3 digits, add commas
+          } else {
+            if (input.value.length > 3) {
+              input.value = addCommas(input.value);
+            }
+          }
         } else {
           input.value = val;
         }
@@ -231,7 +305,7 @@ buttons.forEach((i) => {
       } 
 
       // get current full value
-      let inputNum = parseFloat(input.value);
+      let inputNum = parseFloat(input.value.replace(/,/g, ""));
 
       switch (val) {
         case "+":
@@ -277,7 +351,7 @@ buttons.forEach((i) => {
           }
           break;
         case "=":
-          secondNum = parseFloat(input.value);
+          secondNum = parseFloat(input.value.replace(/,/g, ""));
           switch (operation) {
             case "multiply":
               if (enterBtn === true) {
