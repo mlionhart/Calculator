@@ -3,8 +3,9 @@ const keypad = document.querySelector('.keypad');
 const inputArray = [];
 const buttons = Array.from(document.querySelectorAll("button"));
 let operationClicked = false;
+let enterBtn = false;
 
-// Define your operations as simple functions
+// operations as simple functions
 const add = (num1, num2) => num1 + num2;
 const subtract = (num1, num2) => num1 - num2;
 const multiply = (num1, num2) => num1 * num2;
@@ -23,13 +24,14 @@ window.onload = () => {
 };
 
 input.addEventListener("keydown", (event) => {
-  // Prevent the default input behavior
+  // Prevent the default input behavior (prevent double input from being and input field)
   event.preventDefault();
 
   // Ensures zero is overwritten on input
   if (input.value === "0") input.value = "";
   // if value already in the input is zero, set input to num. If not, concatenate key onto input
   if (!isNaN(event.key)) {
+    enterBtn = false;
     let num = event.key;
     // if operation has already been selected, replace value, rather than concatenate
     if (operationClicked) {
@@ -45,6 +47,8 @@ input.addEventListener("keydown", (event) => {
   if (event.key === 'Escape') {
     input.value = 0;
     operation = null;
+    operationClicked = false;
+    enterBtn = false;
     firstNum = 0;
     secondNum = 0;
   }
@@ -54,18 +58,31 @@ input.addEventListener("keydown", (event) => {
     secondNum = parseFloat(input.value);
     switch (operation) {
       case "multiply":
+        if (enterBtn === true) {
+          input.value = input.value * secondNum;
+        } 
         input.value = multiply(firstNum, secondNum);
         break;
       case "divide":
+        if (enterBtn === true) {
+          input.value = input.value / secondNum;
+        }
         input.value = divide(firstNum, secondNum);
         break;
       case "add":
+        if (enterBtn === true) {
+          input.value = input.value + secondNum;
+        }
         input.value = add(firstNum, secondNum);
         break;
       case "subtract":
+        if (enterBtn === true) {
+          input.value = input.value - secondNum;
+        }
         input.value = subtract(firstNum, secondNum);
         break;
     }
+    enterBtn = true;
     operation = null;
   }
 
@@ -108,7 +125,10 @@ buttons.forEach((i) => {
       // if value already in the input is zero, set input to val. If not, concatenate key onto input
       let val = i.innerText;
 
+      let lastNum;
+
       if (!isNaN(parseFloat(val))) {
+        enterBtn = false;
         val = parseFloat(val);
         if (input.value === "0") input.value = "";
         // if operation has already been selected, replace value, rather than concatenate
@@ -119,6 +139,10 @@ buttons.forEach((i) => {
           input.value += val;
         } else {
           input.value = val;
+        }
+
+        if (enterBtn) {
+          operation = null;
         }
       }
 
@@ -165,20 +189,38 @@ buttons.forEach((i) => {
           secondNum = parseFloat(input.value);
           switch (operation) {
             case "multiply":
+              if (enterBtn === true) {
+                console.log(inputNum);
+                input.value = input.value * inputNum;
+                enterBtn = false;
+              }
               input.value = multiply(firstNum, secondNum);
               break;
             case "divide":
+              if (enterBtn === true) {
+                input.value = input.value / secondNum;
+                enterBtn = false;
+              }
               input.value = divide(firstNum, secondNum);
               break;
             case "add":
+              if (enterBtn === true) {
+                input.value = input.value + secondNum;
+                enterBtn = false;
+              }
               input.value = add(firstNum, secondNum);
               break;
             case "subtract":
+              if (enterBtn === true) {
+                input.value = input.value - secondNum;
+                enterBtn = false;
+              }
               input.value = subtract(firstNum, secondNum);
               break;
           }
           // after performing an operation and clicking equals, you should reset the firstNum and operation variables to prepare for the next calculation.
-          operation = null;
+          enterBtn = true;
+          // operation = null;
           firstNum = parseFloat(input.value);
           break;
         default:

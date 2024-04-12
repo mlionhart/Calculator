@@ -72,3 +72,42 @@ p {
 #ac, #c {
   background-color: red;
 }
+
+@media (max-width: 500px) {
+  .calculator {
+    width: 310px;
+    margin: 0 auto;
+    padding: 18px;
+  }
+
+  h3 {
+    font-size: 1em;
+  }
+
+  p {
+    font-size: .8em;
+  }
+
+  h3, p {
+    margin: -5px 0 8px 0;
+  }
+
+  .display {
+    margin: 10px 5px 15px 5px;
+  }
+
+  .display input {
+    font-size: 3.8em;
+  }
+
+  .keypad {
+    gap: 9px;
+  }
+
+  .keypad > button {
+    background-color: black;
+    color: white;
+    padding: 20px;
+    font-size: 1.3em;
+  }
+}
