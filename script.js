@@ -94,7 +94,7 @@ function formatNumber(num) {
   let number = Number(num); // Convert the input to a number if it isn't already.
 
   // Check if the number is too large for standard display (you may adjust the length threshold).
-  if (number.toString().length > 8 || Math.abs(number) >= 1e8) {
+  if (number.toString().length > 7 || Math.abs(number) >= 1e7) {
     // Use scientific notation for very large or small numbers.
     return number.toExponential(2);
   } else {
