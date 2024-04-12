@@ -101,13 +101,13 @@ p {
   }
 
   .keypad {
-    gap: 9px;
+    gap: 11px;
   }
 
   .keypad > button {
     background-color: black;
     color: white;
-    padding: 20px;
+    padding: 19px;
     font-size: 1.3em;
   }
 }
