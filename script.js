@@ -30,17 +30,32 @@ input.addEventListener("keydown", (event) => {
   // Ensures zero is overwritten on input
   if (input.value === "0") input.value = "";
   // if value already in the input is zero, set input to num. If not, concatenate key onto input
-  if (!isNaN(event.key)) {
+  if (!isNaN(event.key) || event.key === '.') {
     enterBtn = false;
     let num = event.key;
+
+    // period functionality
+    if (num === '.') {
+      if (operationClicked) {
+        input.value = num;
+        operationClicked = false;
+      } else {
+        // prevent period from inputing if already entered
+        if (input.value.includes(".")) return;
+        input.value += num;
+      }
+    }
+
     // if operation has already been selected, replace value, rather than concatenate
     if (operationClicked) {
       input.value = num;
       operationClicked = false;
-    } else if (input.value !== "0") {
+    } else if (input.value !== "0" && num !== '.') {
       input.value += num;
     } else {
-      input.value = num;
+      if (num !== '.') {
+        input.value = num;
+      }
     }
   }
 
@@ -144,7 +159,7 @@ buttons.forEach((i) => {
         if (enterBtn) {
           operation = null;
         }
-      }
+      } 
 
       // get current full value
       let inputNum = parseFloat(input.value);
@@ -183,7 +198,14 @@ buttons.forEach((i) => {
           secondNum = 0;
           break;
         case ".":
-          input.value += val;
+          if (operationClicked) {
+            input.value = val;
+            operationClicked = false;
+          } else {
+            // prevent > one dot from being input
+            if (input.value.includes('.')) break;
+            input.value += val;
+          }
           break;
         case "=":
           secondNum = parseFloat(input.value);
