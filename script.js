@@ -48,7 +48,7 @@ const multiply = (num1, num2) => {
 
   if (resultStr.includes(".")) {
     if (resultStr.length > 9) {
-      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
+      result = parseFloat(result.toFixed(8 - (resultStr.indexOf(".") + 1)));
     }
   } else {
     if (resultStr.length > 8) {
@@ -69,7 +69,7 @@ const divide = (num1, num2) => {
 
   if (resultStr.includes(".")) {
     if (resultStr.length > 9) {
-      result = result.toFixed(8 - (resultStr.indexOf(".") + 1));
+      result = parseFloat(result.toFixed(8 - (resultStr.indexOf(".") + 1)));
     }
   } else {
     if (resultStr.length > 8) {
