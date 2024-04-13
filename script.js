@@ -8,6 +8,7 @@ let afterDecimal = '';
 let operation = null;
 let firstNum = 0;
 let secondNum = 0;
+let hasDash = false;
 
 const addCommas = (numStr) => {
   if (numStr.includes('.')) {
@@ -21,6 +22,11 @@ const addCommas = (numStr) => {
 
   if (numStr.includes(',')) {
     numStr = numStr.replace(/,/g, "");
+  }
+
+  if (numStr.includes('-')) {
+    numStr = numStr.replace(/-/g, "");
+    hasDash = true;
   }
 
   if (numStr.length > 9) {
@@ -46,7 +52,12 @@ const addCommas = (numStr) => {
       numStr.slice(numStr.length - 3);
   }
 
-  return numStr;
+  if (hasDash === true) {
+    hasDash = false;
+    return "-" + numStr;
+  } else {
+    return numStr;
+  }
 };
 
 // operations functions
