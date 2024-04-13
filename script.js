@@ -138,13 +138,13 @@ window.onload = () => {
 
 input.addEventListener("keydown", (event) => {
   // Prevent the default input behavior (prevent double input from being and input field)
-  event.preventDefault();
   console.log(event.key);
 
   // Ensures zero is overwritten on input
   if (input.value === "0") input.value = "";
   // if value already in the input is zero, set input to num. If not, concatenate key onto input
   if (!isNaN(event.key) || event.key === '.') {
+  event.preventDefault();
     enterBtn = false;
     let num = event.key;
 
@@ -212,28 +212,37 @@ input.addEventListener("keydown", (event) => {
     switch (operation) {
       case "multiply":
         if (enterBtn === true) {
-          input.value = multiply(parseFloat(input.value), secondNum);
+          input.value = multiply(parseFloat(input.value.replace(/,/g, "")), secondNum);
           break;
         } 
         input.value = multiply(firstNum, secondNum);
         break;
       case "divide":
         if (enterBtn === true) {
-          input.value = divide(parseFloat(input.value), secondNum);
+          input.value = divide(
+            parseFloat(input.value.replace(/,/g, "")),
+            secondNum
+          );
           break;
         }
         input.value = divide(firstNum, secondNum);
         break;
       case "add":
         if (enterBtn === true) {
-          input.value = add(parseFloat(input.value), secondNum);
+          input.value = add(
+            parseFloat(input.value.replace(/,/g, "")),
+            secondNum
+          );
           break;
         }
         input.value = add(firstNum, secondNum);
         break;
       case "subtract":
         if (enterBtn === true) {
-          input.value = subtract(parseFloat(input.value), secondNum);
+          input.value = subtract(
+            parseFloat(input.value.replace(/,/g, "")),
+            secondNum
+          );
           break;
         }
         input.value = subtract(firstNum, secondNum);
@@ -392,28 +401,40 @@ function handleInput(event) {
       switch (operation) {
         case "multiply":
           if (enterBtn === true) {
-            input.value = multiply(parseFloat(input.value), secondNum);
+            input.value = multiply(
+              parseFloat(input.value.replace(/,/g, "")),
+              secondNum
+            );
             break;
           } 
           input.value = multiply(firstNum, secondNum);
           break;
         case "divide":
           if (enterBtn === true) {
-            input.value = divide(parseFloat(input.value), secondNum);
+            input.value = divide(
+              parseFloat(input.value.replace(/,/g, "")),
+              secondNum
+            );
             break;
           }
           input.value = divide(firstNum, secondNum);
           break;
         case "add":
           if (enterBtn === true) {
-            input.value = add(parseFloat(input.value), secondNum);
+            input.value = add(
+              parseFloat(input.value.replace(/,/g, "")),
+              secondNum
+            );
             break;
           }
           input.value = add(firstNum, secondNum);
           break;
         case "subtract":
           if (enterBtn === true) {
-            input.value = subtract(parseFloat(input.value), secondNum);
+            input.value = subtract(
+              parseFloat(input.value.replace(/,/g, "")),
+              secondNum
+            );
             break;
           }
           input.value = subtract(firstNum, secondNum);
