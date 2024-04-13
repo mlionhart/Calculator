@@ -250,6 +250,14 @@ input.addEventListener("keydown", (event) => {
 
   // subtraction key(s)
   if (num == "-") {
+    if (input.value == 0) {
+      input.value = num;
+      return;
+    } else if (operationClicked) {
+      input.value = num;
+      operationClicked = false;
+      return;
+    }
     firstNum = inputNum;
     operation = "subtract";
     operationClicked = true;
@@ -268,12 +276,12 @@ function addEventListeners(button) {
 buttons.forEach(addEventListeners);
 
 function handleInput(event) {
-  // if value already in the input is zero, set input to val. If not, concatenate key onto input
   let val = event.target.innerText;
-
+  // if number
   if (!isNaN(parseFloat(val))) {
     enterBtn = false;
     val = parseFloat(val);
+    // if value already in the input is zero, set input to val. If not, concatenate key onto input
     if (input.value === "0") input.value = "";
     // if operation has already been selected, replace value, rather than concatenate
     if (operationClicked) {
@@ -310,6 +318,15 @@ function handleInput(event) {
       operationClicked = true;
       break;
     case "-":
+      // functionality to input negative numbers
+      if (input.value == 0) {
+        input.value = val;
+        break;
+      } else if (operationClicked) {
+        input.value = val;
+        operationClicked = false;
+        break;
+      }
       firstNum = inputNum;
       operation = "subtract";
       operationClicked = true;
