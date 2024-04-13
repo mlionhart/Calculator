@@ -2,6 +2,7 @@ const input = document.querySelector("#input");
 const keypad = document.querySelector('.keypad');
 const inputArray = [];
 const buttons = Array.from(document.querySelectorAll("button"));
+const calculator = document.querySelector('.calculator');
 let operationClicked = false;
 let enterBtn = false;
 let afterDecimal = '';
@@ -420,7 +421,7 @@ function handleInput(event) {
   input.focus();
 }
 
-// prevent zoom on mobile devices
+// help prevent zoom on mobile devices
 document.addEventListener(
   "dblclick",
   function (event) {
@@ -428,5 +429,13 @@ document.addEventListener(
   },
   { passive: false }
 );
+
+// focus input on body click
+document.body.addEventListener('click', function(event) {
+  // If the click event was not inside the calculator, focus the input
+  if (!calculator.contains(event.target)) {
+    input.focus();
+  }
+});
 
 
