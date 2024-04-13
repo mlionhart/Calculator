@@ -10,6 +10,7 @@ let operation = null;
 let firstNum = 0;
 let secondNum = 0;
 let hasDash = false;
+let constantNum = 0;
 
 const addCommas = (numStr) => {
   if (numStr.includes('.')) {
@@ -197,6 +198,7 @@ input.addEventListener("keydown", (event) => {
   if (event.key === "Backspace") {
     if (input.value == 0 || input.value.length === 1) {
       input.value = 0;
+      enterBtn = false;
     } else {
       input.value = addCommas(input.value.slice(0, -1));    
     }
@@ -204,35 +206,41 @@ input.addEventListener("keydown", (event) => {
 
   // since Enter key will only be pressed once user is ready, we can just store the secondNum now
   if (event.key == "Enter") {
-    secondNum = parseFloat(input.value.replace(/,/g, ""));
+    if (enterBtn === false) {
+      secondNum = parseFloat(input.value.replace(/,/g, ""));
+    }
     switch (operation) {
       case "multiply":
         if (enterBtn === true) {
-          input.value = input.value * secondNum;
+          input.value = multiply(parseFloat(input.value), secondNum);
+          break;
         } 
         input.value = multiply(firstNum, secondNum);
         break;
       case "divide":
         if (enterBtn === true) {
-          input.value = input.value / secondNum;
+          input.value = divide(parseFloat(input.value), secondNum);
+          break;
         }
         input.value = divide(firstNum, secondNum);
         break;
       case "add":
         if (enterBtn === true) {
-          input.value = parseFloat(input.value) + secondNum;
+          input.value = add(parseFloat(input.value), secondNum);
+          break;
         }
         input.value = add(firstNum, secondNum);
         break;
       case "subtract":
         if (enterBtn === true) {
-          input.value = parseFloat(input.value) - secondNum;
+          input.value = subtract(parseFloat(input.value), secondNum);
+          break;
         }
         input.value = subtract(firstNum, secondNum);
         break;
     }
     enterBtn = true;
-    operation = null;
+    // operation = null;
   }
 
   let num = event.key;
@@ -378,34 +386,35 @@ function handleInput(event) {
       }
       break;
     case "=":
-      secondNum = parseFloat(input.value.replace(/,/g, ""));
+      if (enterBtn === false) {
+        secondNum = parseFloat(input.value.replace(/,/g, ""));
+      }
       switch (operation) {
         case "multiply":
           if (enterBtn === true) {
-            console.log(inputNum);
-            input.value = input.value * inputNum;
-            enterBtn = false;
-          }
+            input.value = multiply(parseFloat(input.value), secondNum);
+            break;
+          } 
           input.value = multiply(firstNum, secondNum);
           break;
         case "divide":
           if (enterBtn === true) {
-            input.value = input.value / secondNum;
-            enterBtn = false;
+            input.value = divide(parseFloat(input.value), secondNum);
+            break;
           }
           input.value = divide(firstNum, secondNum);
           break;
         case "add":
           if (enterBtn === true) {
-            input.value = parseFloat(input.value) + secondNum;
-            enterBtn = false;
+            input.value = add(parseFloat(input.value), secondNum);
+            break;
           }
           input.value = add(firstNum, secondNum);
           break;
         case "subtract":
           if (enterBtn === true) {
-            input.value = parseFloat(input.value) - secondNum;
-            enterBtn = false;
+            input.value = subtract(parseFloat(input.value), secondNum);
+            break;
           }
           input.value = subtract(firstNum, secondNum);
           break;
