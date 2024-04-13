@@ -52,6 +52,7 @@ const addCommas = (numStr) => {
       numStr.slice(numStr.length - 3);
   }
 
+  // put dash back on to number
   if (hasDash === true) {
     hasDash = false;
     return "-" + numStr;
@@ -418,4 +419,14 @@ function handleInput(event) {
   }
   input.focus();
 }
+
+// prevent zoom on mobile devices
+document.addEventListener(
+  "dblclick",
+  function (event) {
+    event.preventDefault();
+  },
+  { passive: false }
+);
+
 
