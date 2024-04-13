@@ -256,136 +256,16 @@ input.addEventListener("keydown", (event) => {
   }
 });
 
-// buttons.forEach((i) => {
-//   i.addEventListener("click", () => {
-//       // if value already in the input is zero, set input to val. If not, concatenate key onto input
-//       let val = i.innerText;
+function addEventListeners(button) {
+  // Check if touch is supported, and use touch events only if supported.
+  if ("ontouchstart" in window) {
+    button.addEventListener("touchstart", handleInput);
+  } else {
+    button.addEventListener("click", handleInput);
+  }
+}
 
-//       if (!isNaN(parseFloat(val))) {
-//         enterBtn = false;
-//         val = parseFloat(val);
-//         if (input.value === "0") input.value = "";
-//         // if operation has already been selected, replace value, rather than concatenate
-//         if (operationClicked) {
-//           input.value = val;
-//           operationClicked = false;
-//         } else if (input.value !== "0") {
-//           input.value += val;
-//           if (input.value.includes(".")) {
-//             if (input.value.split(0, input.value.indexOf(".")).length > 3) {
-//               input.value = addCommas(input.value);
-//             }
-//             // if no decimal is present in the input field, and no more than 3 digits, add commas
-//           } else {
-//             if (input.value.length > 3) {
-//               input.value = addCommas(input.value);
-//             }
-//           }
-//         } else {
-//           input.value = val;
-//         }
-
-//         if (enterBtn) {
-//           operation = null;
-//         }
-//       } 
-
-//       // get current full value
-//       let inputNum = parseFloat(input.value.replace(/,/g, ""));
-
-//       switch (val) {
-//         case "+":
-//           firstNum = inputNum;
-//           operation = "add";
-//           operationClicked = true;
-//           break;
-//         case "-":
-//           firstNum = inputNum;
-//           operation = "subtract";
-//           operationClicked = true;
-//           break;
-//         case "/":
-//           firstNum = inputNum;
-//           operation = "divide";
-//           operationClicked = true;
-//           break;
-//         case "*":
-//           firstNum = inputNum;
-//           operation = "multiply";
-//           operationClicked = true;
-//           break;
-//         case "C":
-//           input.value = 0;
-//           operation = null;
-//           firstNum = 0;
-//           secondNum = 0;
-//           break;
-//         case "":
-//           if (input.value == 0 || input.value.length === 1) {
-//             input.value = 0;
-//           } else {
-//             input.value = addCommas(input.value.slice(0, -1));
-//           }
-//           break;
-//         case ".":
-//           if (operationClicked) {
-//             input.value = val;
-//             operationClicked = false;
-//           } else {
-//             // prevent > one dot from being input
-//             if (input.value.includes('.')) break;
-//             input.value += val;
-//           }
-//           break;
-//         case "=":
-//           secondNum = parseFloat(input.value.replace(/,/g, ""));
-//           switch (operation) {
-//             case "multiply":
-//               if (enterBtn === true) {
-//                 console.log(inputNum);
-//                 input.value = input.value * inputNum;
-//                 enterBtn = false;
-//               }
-//               input.value = multiply(firstNum, secondNum);
-//               break;
-//             case "divide":
-//               if (enterBtn === true) {
-//                 input.value = input.value / secondNum;
-//                 enterBtn = false;
-//               }
-//               input.value = divide(firstNum, secondNum);
-//               break;
-//             case "add":
-//               if (enterBtn === true) {
-//                 input.value = parseFloat(input.value) + secondNum;
-//                 enterBtn = false;
-//               }
-//               input.value = add(firstNum, secondNum);
-//               break;
-//             case "subtract":
-//               if (enterBtn === true) {
-//                 input.value = parseFloat(input.value) - secondNum;
-//                 enterBtn = false;
-//               }
-//               input.value = subtract(firstNum, secondNum);
-//               break;
-//           }
-//           // after performing an operation and clicking equals, you should reset the firstNum and operation variables to prepare for the next calculation.
-//           enterBtn = true;
-//           // operation = null;
-//           firstNum = parseFloat(input.value);
-//           break;
-//         default:
-//           break;
-//       }
-//     input.focus();
-//   });
-// });
-
-buttons.forEach((button) => {
-  button.addEventListener("click", handleInput);
-  button.addEventListener("touchstart", handleInput);
-});
+buttons.forEach(addEventListeners);
 
 function handleInput(event) {
   // if value already in the input is zero, set input to val. If not, concatenate key onto input
